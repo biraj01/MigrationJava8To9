@@ -34,9 +34,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public void deleteAppointment(int appointmentId, int studentId) {
-		AppointmentBean bean = appointmentRepository.findOne(appointmentId);
+	AppointmentBean bean = appointmentRepository.findById(appointmentId).get();
 		if (bean.getStudentBean().getMatrikerNr() == studentId) {
-			appointmentRepository.delete(appointmentId);
+			appointmentRepository.deleteById(appointmentId);
 		} else {
 			System.out.println("no right to delete");
 		}
@@ -46,11 +46,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	public AppointmentBean updateAppointment(int appointmentId, AppointmentParameter bean) throws Exception {
 		validateParam(bean);
-		AppointmentBean beanFormDB = appointmentRepository.findOne(appointmentId);
+		AppointmentBean beanFormDB = appointmentRepository.findById(appointmentId).get();
 		if (beanFormDB == null) {
 			throw new Exception("Appointment with appointmentId" + appointmentId + "not found");
 		}
-		CounselorBean counselorBean = counselorRepository.findOne(bean.getCounselorId());
+		CounselorBean counselorBean = counselorRepository.findById(bean.getCounselorId()).get();
 		if (bean.getFrom().getHour() < counselorBean.getOpenFrom().getHour()) {
 			// Throw closed hour exception
 			throw new DateTimeException("Counselor office is closed");
@@ -74,8 +74,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		bean.setFrom(param.getFrom());
 		bean.setTo(param.getTo());
 
-		StudentBean studentBean = studentRepository.findOne(param.getStudentId());
-		CounselorBean counselorBean = counselorRepository.findOne(param.getCounselorId());
+		StudentBean studentBean = studentRepository.findById(param.getStudentId()).get();
+		CounselorBean counselorBean = counselorRepository.findById(param.getCounselorId()).get();
 		if (studentBean == null) {
 			throw new Exception("student with studentId" + param.getStudentId() + " is not found"); 
 		}
